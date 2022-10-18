@@ -1,4 +1,4 @@
-const ADMIN_PASSWORD = "123456"; //密码
+const ADMIN_PASSWORD = "123456"; //password
 
 const bcryptjs = require("bcryptjs");
 

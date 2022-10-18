@@ -1,25 +1,25 @@
-const express = require("express"); //加载express
-const expressHandlebars = require("express-handlebars"); //加载hbs
-const sqlite3 = require("sqlite3"); //加载db
-const expressSession = require("express-session"); //加载session用于登录，使用session的id来验证cookie
+const express = require("express"); //load express
+const expressHandlebars = require("express-handlebars"); //load hbs
+const sqlite3 = require("sqlite3"); //load db
+const expressSession = require("express-session"); //Load the session for login, use the session id to verify the cookie
 const TOOLS_TITLE_MAX_LENGTH = 25;
-const MY_USERNAME = "Bosai"; //用户名
-const MY_PASSWORD = "123456"; //密码
-const bcryptjs = require("bcryptjs"); //使用哈希加密
+const MY_USERNAME = "Bosai"; //username
+const MY_PASSWORD = "123456"; //password
+const bcryptjs = require("bcryptjs"); //use hash encryption
 const bodyParser = require("body-parser");
-const hashPassword = bcryptjs.hashSync(MY_PASSWORD, 10); //使用哈希加密后得出的哈希密码
+const hashPassword = bcryptjs.hashSync(MY_PASSWORD, 10); //Hash password obtained after using hash encryption
 
 const isTrue = bcryptjs.compareSync(
   MY_PASSWORD,
   "$2a$10$S1f/lxitVD.1uYW6YbCh.OBZYc/ejXXKamM31ePtRUylRjT.hQara"
 );
 
-const db = new sqlite3.Database("bosai-database.db"); //创建db
+const db = new sqlite3.Database("bosai-database.db"); //create db
 
-//get是选择查询发送回数据库，如果从数据库返回一个
-//all是返回多个
-//run是查询对数据库的更改
-//如果没有IF NOT EXISTS，就会崩溃，因为之前运行已经创建过了一样的了
+//get is a select query sent back to the database, if a return from the database
+//all is to return multiple
+//run is the query for changes to the database
+//If there is no IF NOT EXISTS, it will crash, because the previous run has already created the same
 db.run(`
 	CREATE TABLE IF NOT EXISTS tools (
 		id INTEGER PRIMARY KEY,
@@ -28,10 +28,10 @@ db.run(`
 	)
 `);
 
-//启用express
+//enable express
 const app = express();
 
-//启用hbs，默认的主页layout为main.hbs
+//Enable hbs, the default home page layout is main.hbs
 app.engine(
   "hbs",
   expressHandlebars.engine({
@@ -39,7 +39,7 @@ app.engine(
   })
 );
 
-//静态加载public里面的文件
+//Statically load files in public
 app.use(express.static("public"));
 
 app.use(
@@ -54,41 +54,41 @@ app.use(
   })
 );
 
-//将secret传入cookie并且解析出来
-//启用Session的secret来让服务器辨别你是否为本人登录
-//会返回session的id和value，来确认是否是本人登录，而不是直接返回登录名和密码
+// Pass the secret into the cookie and parse it out
+//Enable Session's secret to let the server identify whether you are logged in for yourself
+//The id and value of the session will be returned to confirm whether I am logged in, instead of directly returning the login name and password
 app.use(
   expressSession({
-    saveUninitialized: false, //保持未初始化，需要为faslse
-    resave: false, //重新保存，需要为faslse
-    secret: "$2a$10$S1f/lxitVD.1uYW6YbCh.OBZYc/ejXXKamM31ePtRUylRjT.hQara", //设置一个随机的字符串，这个控制会话的ID
+    saveUninitialized: false, //keep uninitialized, needs to be faslse
+    resave: false, //Re-save, needs to be false
+    secret: "$2a$10$S1f/lxitVD.1uYW6YbCh.OBZYc/ejXXKamM31ePtRUylRjT.hQara", //Set a random string, the ID of this control session
   })
 );
 
-//启用本地的session
+//Enable local session
 app.use(function (request, response, next) {
   response.locals.session = request.session;
   next();
 });
 // --------------------------------------------------------------------------------------------------
-//把start.hbs链接到“/”
+//Link start.hbs to "/"
 app.get("/", function (request, response) {
   response.render("start.hbs");
 });
 
 app.get("/tools", function (request, response) {
-  //暂停它的选择选项
+  //Pause it's selection option
   const read = `SELECT * FROM tools`; //read
-  //这是一个异步函数
-  //将此查询发送到数据库，但是数据库需要些时间从新发回给我们，所以下面的js需要继续运行
-  //首先发送数据库等待响应，如果错误也能报错，使用异步函数为了提高它的运行效率
+  //this is an async function
+  //Send this query to the database, but the database needs some time to send it back to us, so the js below needs to keep running
+  //First send the database to wait for a response, if an error can also report an error, use an asynchronous function to improve its operating efficiency
   db.all(read, function (error, tools) {
     const errorMessages = [];
-    //如果报错
+    //If an error is reported
     if (error) {
       errorMessages.push("Internal server error, check the code!");
     }
-    //否则就正常运行
+    //Otherwise it works fine
     const model = {
       errorMessages,
       tools,
@@ -97,28 +97,27 @@ app.get("/tools", function (request, response) {
     response.render("tools.hbs", model);
   });
 });
-// --------------------------------------------------------------------------------------------------
 
-//把tool.hbs链接到
+//Link tool.hbs to
 app.get("/tools/create", function (request, response) {
   response.render("create-tool.hbs");
 });
 
-//使用post来创建
+//use post to create
 app.post("/tools/create", function (request, response) {
-  //用来请求数据库的title
-  //用来请求数据库的grade
+  //The title used to request the database
+  //Used to request the grade of the database
   const title = request.body.title;
   const grade = parseInt(request.body.grade, 10);
-  //用一个list来装errorMessages
+  //Use a list to hold errorMessagess
   const errorMessages = [];
 
-  //如果title为空的话
+  // if title is empty
   if (title == "") {
     errorMessages.push("The title can not be blank");
   }
 
-  //用来检查grade使用按照要求来填写
+  //Used to check grade use to fill in as required
   if (isNaN(grade)) {
     errorMessages.push("You did not enter a grade number");
   } else if (grade < 0) {
@@ -126,19 +125,19 @@ app.post("/tools/create", function (request, response) {
   } else if (10 < grade) {
     errorMessages.push("The highest grade of Grade is 10");
   }
-  //用来控制如果想要，然后提示Not logged in
+  //Used to control if you want, then prompt Not logged in
   if (!request.session.isLoggedIn) {
     errorMessages.push("Not logged in yet");
   }
 
   if (errorMessages.length == 0) {
-    //这里使用？也是一样的，防止SQL注入
+    //used here? Same thing, preventing SQL injection
     const crea = `
 			INSERT INTO tools (title, grade) VALUES (?, ?)
 		`; //create
     const createval = [title, grade];
 
-    //创建db表，如果错误的提示
+    //Create db table, if wrong prompt
     db.run(crea, createval, function (error) {
       if (error) {
         errorMessages.push("Internal server error, check the code!");
@@ -164,28 +163,27 @@ app.post("/tools/create", function (request, response) {
     response.render("create-tool.hbs", model);
   }
 });
-// --------------------------------------------------------------------------------------------------
 
-//把tool.hbs链接到
+//Link tool.hbs to
 app.get("/tools/update", function (request, response) {
   response.render("update-tool.hbs");
 });
 
-//使用post来创建
+//use post to create
 app.post("/tools/update", function (request, response) {
-  //用来请求数据库的title
-  //用来请求数据库的grade
+  //The title used to request the database
+  //Used to request the grade of the database
   const title = request.body.title;
   const grade = parseInt(request.body.grade, 10);
-  //用一个list来装errorMessages
+  //Use a list to install errorMessages
   const errorMessages = [];
-  //如果title为空的话
+  //if title is empty
 
   if (title == "") {
     errorMessages.push("The title can not be blank");
   }
 
-  //用来检查grade使用按照要求来填写
+  //Used to check grade use to fill in as required
   if (isNaN(grade)) {
     errorMessages.push("You did not enter a grade number");
   } else if (grade < 0) {
@@ -194,19 +192,19 @@ app.post("/tools/update", function (request, response) {
     errorMessages.push("The highest grade of Grade is 10");
   }
 
-  //用来控制如果想要，然后提示Not logged in
+  //Used to control if you want, then prompt Not logged in
   if (!request.session.isLoggedIn) {
     errorMessages.push("Not logged in yet");
   }
 
   if (errorMessages.length == 0) {
-    //这里使用？也是一样的，防止SQL注入
+    //used here? Same thing, preventing SQL injection
     const upd = `
     UPDATE tools SET grade = ? WHERE title = ?
 		`;
     const updval = [grade, title];
 
-    //创建db表，如果错误的提示
+    //Create db table, if wrong prompt
     db.run(upd, updval, function (error) {
       if (error) {
         errorMessages.push("Internal server error, check the code!");
@@ -233,40 +231,37 @@ app.post("/tools/update", function (request, response) {
   }
 });
 
-// --------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------
-
-//把tool.hbs链接到
+//Link tool.hbs to
 app.get("/tools/delete", function (request, response) {
   response.render("delete-tool.hbs");
 });
 
-//使用post来创建
+//use post to create
 app.post("/tools/delete", function (request, response) {
-  //用来请求数据库的title
-  //用来请求数据库的grade
+  //The title used to request the database
+  //Used to request the grade of the database
   const title = request.body.title;
   const grade = parseInt(request.body.grade, 10);
-  //用一个list来装errorMessages
+  //Use a list to install errorMessages
   const errorMessages = [];
-  //如果title为空的话
+  //if title is empty
   if (title == "") {
     errorMessages.push("The title can not be blank");
   }
 
-  //用来控制如果想要，然后提示Not logged in
+  //Used to control if you want, then prompt Not logged in
   if (!request.session.isLoggedIn) {
     errorMessages.push("Not logged in yet");
   }
 
   if (errorMessages.length == 0) {
-    //这里使用？也是一样的，防止SQL注入
+    //used here? Same thing, preventing SQL injection
     const del = `
     DELETE FROM tools WHERE title = ?
 		`;
     const delval = [title];
 
-    //创建db表，如果错误的提示
+    //Create db table, if wrong prompt
     db.run(del, delval, function (error) {
       if (error) {
         errorMessages.push("Internal server error, , check the code!");
@@ -291,15 +286,12 @@ app.post("/tools/delete", function (request, response) {
   }
 });
 
-// --------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------
-
-//使用id来去跳转到对应的网页，就是点击工具了，之后自动跳转到那里去
+//Use the id to jump to the corresponding web page, just click the tool, and then automatically jump there
 app.get("/tools/:id", function (request, response) {
   const id = request.params.id;
-  //使用？来防止SQL注入，如果直接使用${id}会产生注入，可能会被注入一些文件。这点是跟PHP是一样的
+  //use? To prevent SQL injection, if you use ${id} directly, injection will occur, and some files may be injected. This is the same as PHP
   const sel = `SELECT * FROM tools WHERE id = ?`;
-  //上面的那个问号只不过是占位符而已
+  //The question mark above is just a placeholder
   const selval = [id];
 
   db.get(sel, selval, function (error, tool) {
@@ -311,16 +303,16 @@ app.get("/tools/:id", function (request, response) {
   });
 });
 
-//把login.hbs链接到/login
+//Link login.hbs to /login
 app.get("/login", function (request, response) {
   response.render("login.hbs");
 });
 
-//使用post来发送username和password
+//Use post to send username and password
 app.post("/login", function (request, response) {
   const username = request.body.username;
   const password = request.body.password;
-  //如果都为正确的话
+  //if both are correct
   if (isTrue) {
     if (username == MY_USERNAME && password == MY_PASSWORD) {
       request.session.isLoggedIn = true;
@@ -330,37 +322,37 @@ app.post("/login", function (request, response) {
     const model = {
       failedToLogin: true,
     };
-    //没成功继续在这个页面
+    //Failed to continue on this page
     response.render("login.hbs", model);
   }
 });
 
-//把contact.hbs链接到/contact
+//Link contact.hbs to /contact
 app.get("/contact", function (request, response) {
   response.render("contact.hbs");
 });
 
-//把page2.hbs链接到/page2
+//link page2.hbs to /page2
 app.get("/page2", function (request, response) {
   response.render("page2.hbs");
 });
 
-//把about.hbs链接到/about
+//link about.hbs to /about
 app.get("/about", function (request, response) {
   response.render("about.hbs");
 });
 
-//把链接到/penetrationtools
+//put the link to /penetrationtools
 app.get("/penetrationtools", function (request, response) {
   response.render("penetrationtools.hbs");
 });
 
-//把链接到/informationcollectio
+//link to /informationcollectio
 app.get("/informationcollection", function (request, response) {
   response.render("informationcollection.hbs");
 });
 
-//把链接到/vulnerabilityutilization
+//link to /vulnerabilityutilization
 app.get("/vulnerabilityutilization", function (request, response) {
   response.render("vulnerabilityutilization.hbs");
 });
