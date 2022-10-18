@@ -72,7 +72,7 @@ app.use(function (request, response, next) {
 });
 // --------------------------------------------------------------------------------------------------
 //把start.hbs链接到“/”
-app.get("/start", function (request, response) {
+app.get("/", function (request, response) {
   response.render("start.hbs");
 });
 
@@ -325,7 +325,7 @@ app.post("/login", function (request, response) {
     if (username == MY_USERNAME && password == MY_PASSWORD) {
       request.session.isLoggedIn = true;
     }
-    response.redirect("/start");
+    response.redirect("/");
   } else {
     const model = {
       failedToLogin: true,
