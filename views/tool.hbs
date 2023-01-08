@@ -1,0 +1,43 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<h1 class="pagetitle">Hacker Tools</h1><br />
+
+{{#if tool}}
+  <div class="toolsspecfic">
+    <p class="sentence">This tools "{{tool.title}}" get grade
+      {{tool.grade}}/10. 👨‍💻
+    </p>
+
+    <h2>Tags</h2>
+    {{#each tool.tags}}
+      <span class="tag">{{this.name}}</span>
+
+    {{/each}}
+
+    <h2>Feedbacks</h2>
+    {{#each tool.feedbacks}}
+      <div class="feedback">
+        <p>{{this.feedback}}</p>
+      </div>
+
+    {{/each}}
+  </div>
+{{else}}
+  <p>That tools does not exist.</p>
+{{/if}}
+
+{{#if session.isLoggedIn}}
+  <p class="toolsspecfic">
+    <a class="delete" href="/tools/{{tool.id}}/delete">Delete Tool</a>
+    <a
+      class="tools_a"
+      style="margin-right: 20px"
+      href="/tools/{{tool.id}}/tags"
+    >Edit Tag</a>
+    <a class="tools_a" href="/tools/{{tool.id}}/feedbacks">Edit Feedback</a>
+  </p>
+
+{{/if}}

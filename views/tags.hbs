@@ -1,0 +1,23 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<div class="toolsspecfic">
+  <h2>Tags</h2>
+  {{#each tags}}
+    <a
+      href="/tools/{{tool_id}}/tags/{{this.id}}/update"
+      class="tag"
+    >{{this.name}}</a>
+  {{/each}}
+</div>
+
+<form method="post" action="/tools/{{tool_id}}/tags" class="toolsspecfic">
+  <h2>Add Tag</h2>
+  <div class="blankright">
+    <p>Tag Name</p>
+    <input name="name" placeholder="Please enter a tag name" />
+  </div>
+  <button class="add">Add</button>
+</form>

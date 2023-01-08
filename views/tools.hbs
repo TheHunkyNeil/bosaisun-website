@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="/layout.css" />
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<h1 class="pagetitle">Ratings of all hacker tools!</h1><br />
+
+{{#if errorMessages.length}}
+  <p>&ensp;&ensp;&ensp; Can not fetch the tools because:</p>
+  <ul>
+    {{#each errorMessages}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+
+{{else}}
+
+  {{#if tools.length}}
+    <ul>
+      {{#each tools}}
+        <li class="toolslist">
+          {{id}}.<a class="tools_a" href="/tools/{{id}}">
+
+            {{title}}
+          </a>
+          ({{grade}}/10)
+
+        </li>
+      {{/each}}
+    </ul>
+
+  {{else}}
+    <p class="notools">Whoops! We have no tools to rating at the this moment.</p>
+  {{/if}}
+
+{{/if}}

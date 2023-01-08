@@ -1,0 +1,25 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<form
+  method="post"
+  action="/tools/{{tool_id}}/tags/{{tag.id}}/update"
+  class="toolsspecfic"
+>
+  <h2>Update Tag</h2>
+  <div class="blankright">
+    <p>Tag Name</p>
+    <input
+      value="{{tag.name}}"
+      name="name"
+      placeholder="Please enter a tag name"
+    />
+  </div>
+  <button class="update-tag">Update</button>
+  <a
+    class="delete-tag"
+    href="/tools/{{tool_id}}/tags/{{tag.id}}/delete"
+  >Delete</a>
+</form>

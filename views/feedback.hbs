@@ -1,0 +1,25 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<form
+  method="post"
+  action="/tools/{{tool_id}}/feedbacks/{{feedback.id}}/update"
+  class="toolsspecfic"
+>
+  <h2>Update Feedback</h2>
+  <textarea
+    rows="7"
+    style="width: 53%"
+    name="feedback"
+    placeholder="Please enter new feedback"
+  >{{feedback.feedback}}</textarea>
+  <p>
+    <button class="update">Update</button>
+    <a
+      class="delete"
+      href="/tools/{{tool_id}}/feedbacks/{{feedback.id}}/delete"
+    >Delete</a>
+  </p>
+</form>

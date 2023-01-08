@@ -1,0 +1,26 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Login</h1>
+</div>
+
+<h1 class="pagetitle">Login</h1><br />
+{{#if failedToLogin}}
+  <p>&ensp;&ensp;&ensp;Wrong Username or Password!</p>
+{{/if}}
+
+<form action="/login" method="post">
+  <div class="blank">
+    <div class="blankleft">
+      <p>Username:</p>
+      <input type="text" class="typeblank" name="username" />
+    </div>
+  </div>
+  <div class="blank">
+    <div class="blankleft">
+      <p>Password:</p>
+      <input type="password" class="typeblank" name="password" />
+    </div>
+  </div>
+  <input type="submit" class="submitbtn" value="Login" />
+
+</form>

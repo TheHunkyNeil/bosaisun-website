@@ -1,0 +1,43 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Create tools</h1>
+</div>
+
+{{#if errorMessages.length}}
+  <p>&ensp;&ensp;&ensp;Can not create the tools because:</p>
+  <ul>
+    {{#each errorMessages}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+<h1 class="pagetitle">Create Tools</h1><br />
+
+<form action="/tools/create" method="post">
+  <div class="blank">
+    <div class="blankleft">
+      <p>Title:</p>
+      <input
+        type="text"
+        class="typeblank"
+        name="title"
+        value="{{title}}"
+        placeholder="Please enter a tool title"
+      />
+    </div>
+  </div>
+  <div class="blank">
+    <div class="blankleft">
+      <p>Grade:</p>
+      <input
+        type="number"
+        class="typeblank"
+        name="grade"
+        value="{{grade}}"
+        placeholder="Please enter numbers 1-10"
+      />
+    </div>
+  </div>
+  <input type="submit" class="submitbtn" value="Create" />
+</form>

@@ -1,0 +1,37 @@
+<div class="backposter">
+  <div class="poster"></div>
+  <h1 class="title">Hacker tools</h1>
+</div>
+
+<div class="toolsspecfic">
+  <h2>Feedbacks</h2>
+  {{#each feedbacks}}
+    <div class="feedback">
+      <p>{{this.feedback}}</p>
+      <a
+        class="update-feedback"
+        href="/tools/{{tool_id}}/feedbacks/{{this.id}}/update"
+        class="feedback-link"
+      >
+        Update
+      </a>
+      <a
+        class="delete-feedback"
+        href="/tools/{{tool_id}}/feedbacks/{{this.id}}/delete"
+      >Delete</a>
+    </div>
+  {{/each}}
+</div>
+
+<form method="post" action="/tools/{{tool_id}}/feedbacks" class="toolsspecfic">
+  <h2>Add Feedback</h2>
+  <textarea
+    rows="7"
+    style="width: 53%"
+    name="feedback"
+    placeholder="Please enter new feedback"
+  ></textarea>
+  <p>
+    <button class="add">Add</button>
+  </p>
+</form>
